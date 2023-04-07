@@ -5,6 +5,8 @@ using UnityEngine;
 public class Joystick : MonoBehaviour
 {
     [SerializeField] private float maxDragDistance = 1;
+
+    public Vector2 input;
     
     private RectTransform _rectTransform;
     private Vector2 _joystickDefaultPosition;
@@ -34,5 +36,6 @@ public class Joystick : MonoBehaviour
         {
             _rectTransform.anchoredPosition = _joystickDefaultPosition;
         }
+        input = _rectTransform.anchoredPosition / maxDragDistance;
     }
 }
