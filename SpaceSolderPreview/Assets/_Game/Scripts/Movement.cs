@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour
 {
+    private const float MAX_ROTATION_VALUE = 1f;
+
     [SerializeField] private Joystick joystick;
     [SerializeField] private float movementSpeed;
     [SerializeField] private float rotationSpeed;
@@ -25,19 +27,13 @@ public class Movement : MonoBehaviour
     {
         _movementDirection = new Vector3(joystick.input.x, 0, joystick.input.y);
 
-        if(joystick.input.x > 0.001f && joystick.input.x < rotateArroundJoystickThreshold)
+        if(joystick.input.x > rotateArroundJoystickThreshold)
         {
-            _movementDirection.x = 0;
-            _rotationSpeedPercentage = Mathf.InverseLerp(0.001f, rotateArroundJoystickThreshold, joystick.input.x);
-            _rotation = new Vector3(0, rotationSpeed * _rotationSpeedPercentage * Time.deltaTime, 0);
-            transform.Rotate(_rotation, Space.Self);
+            RotateInBounds(rotateArroundJoystickThreshold, MAX_ROTATION_VALUE, rotationSpeed);
         }
-        else if(joystick.input.x < -0.001f && joystick.input.x > -rotateArroundJoystickThreshold)
+        else if(joystick.input.x < -rotateArroundJoystickThreshold)
         {
-            _movementDirection.x = 0;
-            _rotationSpeedPercentage = Mathf.InverseLerp(-rotateArroundJoystickThreshold, -0.001f, joystick.input.x);
-            _rotation = new Vector3(0, -rotationSpeed * _rotationSpeedPercentage * Time.deltaTime, 0);
-            transform.Rotate(_rotation, Space.Self);
+            RotateInBounds(-rotateArroundJoystickThreshold, -MAX_ROTATION_VALUE, -rotationSpeed);
         }
 
         _movementDirection = transform.rotation * _movementDirection;
@@ -45,5 +41,13 @@ public class Movement : MonoBehaviour
 
         _animator.SetFloat("Straight_Movement", joystick.input.y);
         _animator.SetFloat("Side_Movement", joystick.input.x);
+    }
+
+    private void RotateInBounds(float from, float to, float speed)
+    {
+        _movementDirection.x = 0;
+        _rotationSpeedPercentage = Mathf.InverseLerp(from, to, joystick.input.x);
+        _rotation = new Vector3(0, speed * _rotationSpeedPercentage * Time.deltaTime, 0);
+        transform.Rotate(_rotation, Space.Self);
     }
 }
